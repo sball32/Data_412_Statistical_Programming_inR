@@ -1,0 +1,133 @@
+---
+title: "HW5"
+author: "Sydney Ball"
+date: '`r Sys.Date()`'
+output: html_document
+---
+
+```{r message=FALSE}
+library(tidyverse)
+library(Lahman)
+```
+
+#### Question 1:
+Shoe that Batting is not a tibble.
+```{r}
+is_tibble(Batting)
+```
+
+#### Question 2:
+Without hard coding, show the number of rows and columns in Batting.
+```{r}
+dimensions <- dim(Batting)
+
+dimensions[1]
+
+dimensions[2]
+```
+
+#### Question 3:
+Convert the data frame from Batting into a tibble.
+```{r}
+as_tibble(Batting) -> BattingT
+is_tibble(BattingT)
+```
+
+#### Question 4:
+se dplyr coding to determine how many and which players hit more than 30 home runs in 1991. (Select playerID, teamID, yearID, and HR)
+```{r}
+BattingT%>%
+  select(playerID, teamID, yearID, HR)%>%
+  filter(HR>=30)%>%
+  filter(yearID == 1991)
+```
+
+#### Question 5:
+Use subsetting R code to determine the mean for HR in 1991.
+
+We determine that the mean number of homeruns in 1991 is about 34.6.
+```{r}
+BattingT%>%
+  select(playerID,teamID,yearID, HR)%>%
+   filter(HR>=30)%>%
+  filter(yearID == 1991)%>%
+  summarize(HR = mean(HR , na.rm = TRUE) ) 
+```
+
+#### Question 6:
+Use dplyr code to determine how many and which players hit more than 40 SB in 1990. (Select playerID, teamID, yearID, and HR)
+```{r}
+BattingT%>%
+  select(playerID, teamID, yearID, HR, SB)%>%
+  filter(SB>40)%>%
+  filter(yearID == 1990)
+```
+
+#### Question 7:
+Use subsetting R code to determine the mean for SB in 1990.
+```{r}
+BattingT%>%
+  select(playerID,teamID,yearID,HR,SB)%>%
+   filter(SB>40)%>%
+  filter(yearID == 1990)%>%
+  summarize(SB = mean(SB , na.rm = TRUE) ) 
+```
+
+#### Question 8:
+Use R code to create side by side boxplots showing greater than 23HR counts for players in 1990 and 1991.
+```{r}
+filtered_data <- BattingT %>%
+  select(playerID, yearID, HR)%>%
+  filter(yearID %in% c(1990, 1991))%>%
+  filter(HR > 23)%>%
+  arrange(desc(HR))
+
+filtered_data
+
+ggplot(filtered_data, aes(x = as.factor(yearID), y = HR)) +
+  geom_boxplot(fill = "green4") +
+  labs(x = "Year", y = "Home Run Count", title = "Players with more than 23 Home Runs in 1990 and 1991")
+```
+
+#### Question 9:
+The boxplots below summarize the combined homerun output for individual players for the years 1990 and 1991. (The individual players on indicated teams who hit more than 23 homeruns)
+```{r}
+filtered_data2 <- BattingT %>%
+  select(playerID, yearID, HR, teamID)%>%
+  filter(yearID %in% c(1990, 1991))%>%
+  filter(HR > 23)%>%
+  arrange(desc(HR))
+
+filtered_data2
+
+ggplot(filtered_data2, aes(x = as.factor(teamID), y = HR)) +
+  geom_boxplot(fill = "purple") +
+  labs(x = "Team", y = "Home Runs", title = "Boxplot showing more than 23 HRs in 1990 and 1991")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

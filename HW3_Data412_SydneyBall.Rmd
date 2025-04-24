@@ -1,0 +1,85 @@
+---
+title: "HW3_Data412_SydneyBall"
+author: "Sydney Ball"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+##Libraries
+```{r}
+library("reshape2")
+library("tidyverse")
+```
+
+##1 Data frame "Tips"
+```{r}
+?tips
+tips.data = reshape2::tips
+```
+The variable size from data frame "tips" is the size of the party in terms of what a waiter recorded from a restaurant. 
+
+##2 
+Mimic the shown bar graph with x = size, y = count and fill the bars with red
+```{r}
+ggplot(data=tips.data) +
+  geom_bar(mapping = aes(x=size, fill=size), color = "red", fill= "red") +
+  ggtitle("Bargraph showing counts for tip sizes")
+```
+
+##Question 2
+Make a stacked bargraph from the bargraph above 
+```{r}
+cp <-ggplot(data = tips.data, aes(x="", y = size, fill=day))+
+  geom_bar(width = .5, stat = "identity")
+cp
+```
+
+##Question 4
+create a pie chart from the data above
+```{r}
+pie <- cp + coord_polar("y", start=0) 
+pie
+```
+
+##Question 5
+Create a scatterplot using the tips data frame where x = total bill and y = tip/total bill 
+```{r}
+ggplot(data = tips.data) +
+  geom_point(mapping = aes(x=total_bill, y=(tip/total_bill)), color = "maroon2") +
+ xlab("Total Bill") +
+ ylab("Tips divided by Total Bill") +
+ ggtitle("Relationship between tips and the bill total")
+
+```
+
+##Question 6
+Make this data into a facet scatter plot graph using day that has 2 rows 
+```{r}
+ggplot(data=tips.data, mapping=(aes(x=total_bill,y=(tip/total_bill), color = "maroon2"))) +
+  geom_point() +              
+  facet_wrap(~day, nrow = 2) 
+```
+It seems that Sunday has a very influential outlier in terms of tip/bill and the total bill.  
+
+##Question 7
+Make this data into a facet scatter plot graph using day that has 2 rows 
+```{r}
+ggplot(data=tips.data, mapping=(aes(x=time,y=size))) +
+  geom_point() +              
+  facet_wrap(~day, nrow = 2) 
+```
+It seems that dinner on Sunday is very busy and lunch on Thursday. 
+
+##Question 8
+Change the day names in the facet graphs
+```{r}
+tips.data$day <- factor(tips.data$day, levels = c("Fri", "Sat", "Sun", "Thur"),
+                       labels = c("Friday", "Saturday", "Sunday", "Thursday"))
+
+ggplot(data=tips.data, mapping=(aes(x=time,y=size))) +
+  geom_point() +              
+  facet_wrap(~tips.data$day, nrow = 2)
+```
+
+
+

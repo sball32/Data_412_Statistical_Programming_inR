@@ -1,0 +1,92 @@
+---
+title: "data412_HW1_sydneyball"
+author: "Sydney Ball"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+#Question 1:
+Use and show R code to produce all even integers greater than 7 but less than 101
+```{r}
+seq(8, 100, 2) 
+```
+
+#Question 2:
+Use and show R code to find the mean of all positive integers less than 100.
+```{r}
+mean(1:99)
+```
+
+#Question 3:
+Write a function (using R code and the structure demonstrated in class) to
+calculate a z-score for a given observed value, a mean, and a standard deviation
+value. And then use your function to find a z score for the following problem.
+(Research the internet to find the formula used to calculate a z score)
+
+Observed value = 25.77, mean = 23.54, standard deviation = 2.442
+```{r}
+zscore<- function(o,m,sd)
+  {result <- ((o-m)/sd)
+    return(result)
+}
+zscore(25.77, 23.54, 2.442)
+```
+
+#Question 4: 
+Use and show R code to round your z score answer in problem 3 to the nearest
+tenth.
+```{r}
+round(.9131859, digits = 3)
+```
+
+#Question 5:
+Write a function (using R code and the structure demonstrated in class) to
+calculate the natural log of a number multiplied by the common log of the same
+number divided by the cube root of a given prime number.
+
+Use your function to find the answer if the number to be used for both log
+expressions is 32 and the given prime number is 11.
+```{r}
+numberLog <- function(log,log10,cuberoot)
+  {result <- ((log*log10)/(cuberoot))
+    return(result)
+    }
+
+numberLog (32, 32, 11)
+
+(log(32)*(log10(32)))/(11^(1/3))
+```
+
+#Question 6:
+Use and show R code to round your answer in problem 5 to the nearest
+hundredth.
+```{r}
+round(2.345548, digit = 2)
+```
+
+#Question 7:
+Write a function (using R code and the structure demonstrated in class) that will
+create the first 10 squares of positive odd integers. Your function should give you
+the following output. 1, 9, 25, 49, …, 361 when you input values 1 to 10.
+```{r}
+list <- c()
+for (n in seq(1, 10)) {
+    y = 2*n-1
+    list[[n]] <- y*y
+  }
+
+for (n  in list) {
+	print(n)
+  }
+```
+
+
+
+
+
+
+
+
+
+
+

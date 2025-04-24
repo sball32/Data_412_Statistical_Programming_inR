@@ -1,0 +1,184 @@
+---
+title: 'HW #10 A'
+author: "Sydney Ball"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+### Libraries
+```{r message=FALSE}
+library(tidyverse)
+```
+
+### Question 1:
+#### Write a function that will find the sum of the natural log, the common log and a log of base 2 for any given positive number. Use your function to find answers for the first five even integers. Show all the details and structure of your function. You should get five answers. The first two answers are 1.994177 and 3.988354. (Your output should show the other three as well)
+```{r}
+find_num_q1 <- function(number){
+  calc_num <- log(number) + log10(number) + log2(number)
+  return(calc_num)
+}
+result <- numeric(5)
+
+for(i in 1:5) {
+  even_number <- 2 * i
+  result[i] <- find_num_q1(even_number)
+}
+
+print(result)
+
+```
+
+### Question 2:
+#### Use the if-else structure to print the statement "This is a big number" if the square of a value is greater than or equal to 100 and the following statement is printed if the square of the number is less than 100, "This is not a big number”. Use and show values of assignment and if-else structures that will output both statements.
+```{r}
+number_q2 <- 10
+
+if ((number_q2^2) >= 100) {
+  print("This is a big number")
+} else {
+  print("This is not a big number")
+}
+```
+```{r}
+number_q2_2 <- 9
+
+if ((number_q2_2^2) >= 100) {
+  print("This is a big number")
+} else {
+  print("This is not a big number")
+}
+```
+
+### Question 3:
+#### For the following if-else if coding structure, make an adjustment so that it prints "Team A won"
+```{r}
+teamA <- 3 
+teamB <- 2 
+
+if (teamA > teamB) {
+print ("Team A won")
+} else if (teamA < teamB) {
+print ("Team B won")
+} else {
+"Team A & B tied"
+}
+```
+
+### Question 4:
+#### Write an if-else if-else sequence of commands that will output the following statements and appropriate output:
+
+If a value is divisible by 3 and 5 the output, the statement is "divisible by Three
+and Five".
+
+If a value is divisible by 3 and 4 the output statement is "divisible by Three and
+Four.
+
+If a value is a number that does not fall into either category, the output statement
+should be "neither".
+
+Use your function to show output statements for values 16, 45, and 24
+```{r}
+divisibility_of_number <- function(number_q4) {
+  if (number_q4 %% 3 == 0 && number_q4 %% 5 == 0) {
+  print("divisible by Three and Five")
+  } else if (number_q4 %% 3 == 0 && number_q4 %% 4 == 0) {
+  print("divisible by Three and Four")
+  } else {
+  return("neither")
+  }
+}
+
+test_q4 <- c(16, 45, 24)
+
+output_statements <- sapply(test_q4, divisibility_of_number)
+
+names(output_statements) <- test_q4  
+
+print(output_statements)
+```
+
+### Question 5:
+#### Use piping and a dplyr command to show and use R code to produce the following modified mpg data table that contains only quantitative variables Now use the “special loop coding chunk”, illustrated in class, to produce the variance for all variables of the modified data table.
+```{r}
+mpg_quant <- mpg %>% 
+  select(is.numeric)
+
+print(mpg_quant)
+```
+```{r}
+variance_q5 <- vector("double", ncol(mpg_quant))
+
+for (i in seq_along(mpg_quant)) {
+  variance_q5[i] <- var(mpg_quant[[i]], na.rm = TRUE)
+}
+
+names(variance_q5) <- names(mpg_quant)
+
+print(variance_q5)
+
+```
+
+### Question 6:
+#### Construct a for-loop that will produce the difference between the cube and the square for each prime number between 10 and 30. (There are 6 answers. The first answer is 1210, your for-loop code should produce the other five answers)
+```{r}
+prime_num <- c(11, 13, 17, 19, 23, 29)
+
+difference_q6 <- numeric(length(prime_num))
+
+for (i in seq_along(prime_num)) {
+  n <- prime_num[i]
+  difference_q6[i] <- n^3 - n^2
+}
+
+print(difference_q6)
+
+```
+
+### Question 7:
+#### An alternative to the if statement when multiple cases are to be considered is the switch statement. Research the switch statement and create a function that takes two numbers and 1 mathematical operation. Based on the operation (choose at least 5 operations), your function should return the result. Test your function with a few function calls.
+```{r}
+math_operation <- function(num1, num2, operation) {
+  result_q7 <- switch(operation, 
+                      "addition" = num1 + num2,
+                      "subtraction" = num1 - num2,
+                      "multiplication" = num1 * num2,
+                      "division" = num1 / num2,
+                      "exponential" = num1 ^ num2,
+                      stop("Error")
+  )
+  return(result_q7)
+}
+
+test1 <- math_operation(234, 76, "addition")
+test2 <- math_operation(1234, 98, "subtraction")
+test3 <- math_operation(426, 79, "multiplication")
+test4 <- math_operation(269, 5, "division")
+test5 <- math_operation(24, 2, "exponential")
+
+print(test1) 
+print(test2) 
+print(test3) 
+print(test4)  
+print(test5)  
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

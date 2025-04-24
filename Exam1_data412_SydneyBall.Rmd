@@ -1,0 +1,156 @@
+---
+title: "Exam 1"
+author: "Sydney Ball"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+#### Import Library 
+```{r message=FALSE}
+library(tidyverse)
+```
+
+#### Question 1:
+Produce and save a DATA TABLE that shows output for Ohio (OH) only. Use the piping method and the appropriate dplyr functions. Then display the first 5 rows.
+```{r}
+midwest_q1 <- midwest%>%
+  filter(state == "OH")%>%
+  print(n=5)
+```
+
+```{r}
+write.csv(midwest_q1, "filtered_midwest_data.csv", row.names = FALSE)
+```
+
+#### Question 2:
+Produce and save a DATA TABLE that shows the white populations that are greater than 50,000 but less than 90,000 for the state of Indiana (IN). Display first 10 rows. Do not hard code the answer.
+```{r}
+midwest_q2 <- midwest%>%
+  filter(popwhite >= 50000) %>% 
+  filter(popwhite <= 90000) %>% 
+  filter(state == "IN") %>% 
+  print(n=10) 
+```
+```{r}
+write.csv(midwest_q2, "filtered_midwest_data.csv", row.names = FALSE)
+```
+
+#### Question 3:
+Produce and save a DATA FRAME (20 observations) that shows only the variables state, county, poptotal, popamerindian, and percamerindian for the state of Indiana. Also, your data table should show popamerindian in descending order. Which county in Indiana has the highest number of Native Americans?
+
+It seems like the county with the highest number of Native Americans is Marion county in Indiana.
+```{r}
+midwest_q3 <- midwest %>% 
+  select(state, county, poptotal, popamerindian, percamerindan) %>% 
+  filter(state == "IN") %>% 
+  arrange(desc(popamerindian)) %>% 
+  print(n=20) 
+```
+
+#### Question 4:
+Create a DATA TABLE for only the state of Michigan (MI) showing those counties that have a known poverty population that is greater than 10,000 and a percentage of professionals that is greater than 10 percent. This data frame should only contain the variables that you need for the data frame. (Your output should only have four variables and six observations.)
+```{r}
+midwest_q4 <- midwest %>% 
+  select(state, county, poppovertyknown, percprof) %>% 
+  filter(state == "MI") %>% 
+  filter(poppovertyknown > 10000) %>%
+  filter(percprof > 10)
+
+midwest_q4
+  
+```
+
+#### Question 5:
+Write R code that will show the mean of the poverty population for the counties of each state.
+```{r}
+midwest %>% 
+  select(state, county, poppovertyknown) %>%
+  group_by(state) %>% 
+  summarize("Mean Poverty" = mean(poppovertyknown , na.rm = TRUE)) 
+```
+
+#### Question 6:
+Produce a scatter plot with orange dots that shows the relationship between the variables poppovertyknown and poptotal (Let poptotal = x and poppovertyknown = y). Include a centered "blue" title, x and y labels.
+```{r}
+ggplot(data = midwest) +
+  geom_point(mapping = aes(x=poptotal, y=poppovertyknown), color = "orange") +
+  xlab("Population Total") +
+  ylab("Population Poverty Known") +
+  ggtitle("Poverty Familar Portion of the Population") +
+  theme(plot.title = element_text(hjust = 0.5, color ="blue"))
+```
+
+#### Question 7:
+Write R code that will produce the following side by side boxplots. Then change the boxes to purple, and the outliers to red. Include personalized labels and a title.
+```{r}
+ggplot(data = midwest)  +
+  geom_boxplot(mapping = aes(x = state, y = percadultpoverty), 
+               fill = "purple", outlier.color = "red") +
+  xlab("State") +
+  ylab("Percent of Adults in Poverty") +
+  ggtitle("Adults in Poverty by State")
+
+```
+
+#### Question 8: 
+Produce a facet plot that shows scatter plots (yellow data points) with respect to the levels for the variable state. Also add code that will generate regression lines through your scatter plots that feature x = percollege and y = percprof. Title your facet plot "College/Professional Work Scatter Plots".
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+ggplot(data = midwest, aes(x = percollege, y = percprof)) +
+  geom_point(color = "yellow") +
+  geom_smooth(method = "lm", se = FALSE, color = "purple4") +
+  facet_wrap(~state) +
+  labs(title = "College/Professional Work Scatter Plots")
+```
+
+#### Question 9:
+Create a bar graph that shows the different COUNTS for each state in the data set. Your bars should have different colors.
+```{r}
+ggplot(data = midwest, aes(x = state, fill = state)) +
+  geom_bar() +
+  xlab("State") +
+  ylab("Count") 
+```
+ 
+ Which state has the highest count (do not hard code)?
+  It seems Illinois has the highest 'count.' 
+```{r}
+max_count_state <- names(which.max(table(midwest$state)))
+max_count_state
+```
+ 
+#### Question 10:
+The formula used to find the volume of a cylinder and surface area of a cylinder are included above. Using the formal notation and process for writing a function, as demonstrated in class, write a single function that will calculate the Volume and the Surface Area of a given cylinder. Test your function by calculating answers for r = 5 and h = 10 and presenting results as a full sentence.
+
+Volume = pi*r^2*h
+SfA = 2((pi*r*h) + (pi*r^2))
+```{r}
+cylindercalc <- function(radius, height) {
+  volume = pi * radius^2 * height
+  surface_a = 2 * (pi * radius * height + pi * radius^2)
+  return(list(volume = volume, surface_a = surface_a))
+}
+
+result <- cylindercalc(radius = 5, height = 10)
+print(result)
+```
+
+```{r}
+result <- cylindercalc(radius = 5, height = 10)
+
+cat("For a cylinder with radius 5 and height 10, the volume is", result$volume, "cubic units and the surface area is",result$surface_a, "square units.")
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,101 @@
+---
+title: "HW9A"
+author: "Sydney Ball"
+date: "`r Sys.Date()`"
+output: html_document
+---
+```{r message=FALSE}
+library(tidyverse)
+```
+
+### Question 1:
+#### As illustrated in the notes and your book, create a factor that will allow you to sort the vector given according to value from lowest to highest. (Show all work and steps; make sure that your work shows use of the factor function)
+```{r}
+y <- c("ten", "eight", "twelve", "two", "six", "four")
+ordered_levels <- c("two", "four", "six", "eight", "ten", "twelve")
+factor(y, levels = ordered_levels)
+```
+
+### Question 2:
+#### Create a bar graph that will indicate counts for the different religions in the gss_cat data frame. Use a factor function to align the bars in descending order.
+```{r}
+data("gss_cat", package = "forcats")
+
+religion_counts <- gss_cat %>%
+  count(relig, sort = TRUE) 
+
+religion_counts <- religion_counts %>%
+  mutate(relig = fct_reorder(relig, n))
+
+ggplot(religion_counts, aes(x = relig, y = n)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Religion", y = "Count", title = "Counts of Different Religions in GSS")
+```
+
+### Question 3:
+#### Use the fct_recode function (along with mutate) to change level 'Never married' to 'Never Married'. You are to perform the change on the marital variable of the gss_cat data frame.
+```{r}
+gss_cat2 <- gss_cat %>%
+  mutate(marital = fct_recode(marital,
+                              "Never Married" = "Never married"))
+summary(gss_cat2$marital)
+```
+
+### Question 4:
+#### Use the fct_collapse function to create the table given below for the variable marital of the gss_cat data frame.
+```{r}
+gss_cat3 <- gss_cat %>%
+  mutate(marital = fct_collapse(marital,
+                                "Notmarried" = c("Never married", "Divorced", "Separated", "Widowed"),
+                                "Married" = "Married",
+                                "No answer" = "No answer"))
+
+marital_counts <- gss_cat3 %>%
+  count(marital) %>%
+  filter(marital %in% c("No answer", "Not married", "Married"))
+
+print(marital_counts)
+
+```
+
+### Question 5:
+#### Use and show R code to create a data table the shows the mean age for every religion shown in the gss_cat data frame. A partial table is shown below. Your code should produce a table that shows 15 observations.
+```{r}
+gss_cat %>%
+  group_by(relig) %>%
+  summarize(meanage = mean(age, na.rm = TRUE), 
+            num = n(),
+            age = mean(age, na.rm = TRUE)) -> religage
+
+head(religage, 15)
+```
+
+### Question 6:
+#### Use and show R code to produce the scatterplot shown that graphically relates mean age to each religion
+```{r}
+religion_age <- gss_cat %>%
+  group_by(relig) %>%
+  summarize(meanage = mean(age, na.rm = TRUE))
+
+ggplot(religion_age, aes(x = meanage, y = relig)) +
+  geom_point() 
+```
+
+### Question 7: 
+#### Now use the fct_reorder function to improve on the scatter plot produced in #6. Your scatter plot should show a progression of lowest to highest mean ages for each religion.
+```{r}
+religage <- gss_cat %>%
+  group_by(relig) %>%
+  summarize(meanage = mean(age, na.rm = TRUE))
+
+ggplot(religage, aes(x = meanage, y = fct_reorder(relig, meanage))) +
+  geom_point()
+```
+
+
+
+
+
+
+
+

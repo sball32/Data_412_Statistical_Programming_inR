@@ -1,0 +1,138 @@
+---
+title: "Exam 2"
+author: "Sydney Ball"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+    code_folding: show
+    df_print: paged
+    theme: united
+---
+
+### Library
+```{r message=FALSE}
+library(tidyverse)
+library(kableExtra)
+library(rmarkdown)
+```
+
+### Question 1:
+#### Load and output the relig_income data set. How many rows and columns does it have?
+The data relig_income has 18 columns and 11 rows
+```{r}
+data("relig_income")
+nrow(relig_income)
+ncol(relig_income)
+```
+
+### Question 2:
+#### The relig_income data set has column names that are not variables, and the data set is much too wide. Use R code and specifically tidying code that will produce a longer table with variable names for the columns. A partial table is given below. Your output should have at least ten rows.
+```{r}
+relig_income_long <- pivot_longer(relig_income, cols = -religion, 
+                                  names_to = "income", 
+                                  values_to = "count")
+kable(head(relig_income_long,15))
+```
+
+### Question 3:
+#### Now use R code to produce a data set that only reflects observations for income levels $100-150k. Your output should show all 18 rows. A partial table is given below.
+```{r}
+relig_income_filtered <- relig_income_long %>%
+  filter(income == "$100-150k")
+kable(relig_income_filtered)
+```
+
+### Question 4:
+#### Use and show R code that will calculate the sum for all frequency values. What is the sum?
+```{r}
+total_sum <- sum(relig_income_long$count, na.rm = TRUE)
+kable(total_sum)
+```
+
+### Question 5:
+#### Using your sum for the frequency column, Use and show R code to create another column that produces proportion values for each observation. A partial table is given below. Your output should show 18 rows.
+```{r}
+relig_income_proportion <- relig_income_long %>%
+  mutate(proportion = count / total_sum) %>% 
+  filter(income == "$100-150k")
+kable(relig_income_proportion)
+```
+
+### Question 6:
+#### Now use R code to make the entries in the income column more descriptive and precise. Change $100 – 150k to $100k - $150k. A partial table is given below. Your table should show all 18 rows.
+```{r}
+relig_income_descriptive <- relig_income_proportion %>%
+  mutate(income = recode(income, 
+                         "$100-150k" = "$100k - $150k"))
+kable(relig_income_descriptive)
+```
+
+### Question 7:
+##### a) Use and show R code to produce tribbles for the tables superheroes and publishers.
+```{r}
+superheroes <- tibble::tribble(
+  ~name, ~alignment, ~gender, ~publisher,
+  "Magneto", "bad", "male", "Marvel",
+  "Storm", "good", "female", "Marvel",
+  "Mystique", "bad", "female", "Marvel",
+  "Batman", "good", "male", "DC",
+  "Joker", "bad", "male", "DC",
+  "Catwoman", "bad", "female", "DC",
+  "Hellboy", "good", "male", "Dark Horse Comics"
+)
+kable(superheroes)
+publishers <- tibble::tribble(
+  ~publisher, ~yr_founded,
+  "DC", 1934,
+  "Marvel", 1939,
+  "Image", 1992
+)
+kable(publishers)
+```
+
+##### b) Use and show R code that shows that name is a key for the data table superheroes.
+```{r}
+superheroes %>%
+  count(name) %>%
+  filter(n > 1)
+```
+
+##### c) Use and show R code that produces an inner join for the tables. Does the inner join have any missing information? If so, explain why.
+No this inner join doesn't have any missing information when printed because it only took from the data that matched in both tibbles. The code excluded Hellboy because it didn't match any other published. So technically there is unused information, but the table has no missing values that appear as "n/a".
+```{r}
+kable(inner_join(superheroes, publishers, by = "publisher"))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

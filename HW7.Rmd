@@ -1,0 +1,121 @@
+---
+title: "HW7"
+author: "Sydney Ball"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+### Library 
+```{r message=FALSE}
+library(tidyverse)
+library(nycflights13)
+```
+
+### Question 1:
+Examine the data table weather from the nycflights13 package. Find a key for the weather data table. (Hint: the key is a collection of two variables). Show and use R code to confirm that your selection is a key.
+```{r}
+view(weather)
+weather %>% 
+  count()%>%
+  filter(n>1)
+```
+
+### Question 2:
+##### 2a
+```{r}
+policies <- tribble(
+  ~PolicyNumber,  ~EffectiveDate,  ~ExpirationDate,
+  1, "2012-01-01", "2012-12-01",
+  2, "2012-01-01", "2012-06-30",
+  3, "2012-07-01", "2012-12-31",
+  4, "2012-04-01", "2012-12-31",
+)
+policies
+```
+```{r}
+claims <- tribble(
+  ~ClaimNumber,  ~PolicyNumber,  ~ClaimCost,
+  123, 1, 100,
+  124, 1, 2400,
+  125, 3, 350,
+  126, 4, 8000,
+)
+claims
+```
+
+#### 2b: Policy Number is a key for both
+```{r}
+policies %>%
+  count(by=PolicyNumber)%>%
+  filter(n>1)
+claims %>%
+  count(by=PolicyNumber)%>%
+  filter(n>1)
+```
+
+#### 2c: Left Joint
+```{r}
+policies %>% 
+  left_join(claims)
+```
+
+#### 2d: Right Joint
+```{r}
+policies %>% 
+  right_join(claims)
+```
+
+#### 2e: Inner Joint
+```{r}
+policies %>% 
+  inner_join(claims)
+```
+
+#### 2f: Full Joint
+```{r}
+policies %>% 
+  full_join(claims)
+```
+
+#### 2g: No claim
+The full joint show which joint shows that no claim has been filed for policy number 2.
+
+### Question 3:
+Study and analyze the variables of the flights data table from the nycflights13 data package. Create two different tables from the flights data table. One table (table1a), showing the top 10 destinations and the other table (table1b showing the variables carrier, dest, origin, and air_time). Use and show R code to join the two tables, resulting in the table shown below.
+```{r}
+view(flights)
+
+table1a <- flights %>%
+  group_by(dest) %>%
+  summarise(NumberOfFlights = n()) %>%
+  arrange(desc(NumberOfFlights)) %>%
+  top_n(10, NumberOfFlights)
+table1a
+
+table1b <- flights %>% 
+  select(carrier, dest, origin, air_time)
+table1b
+
+
+final_table <- inner_join(table1a, table1b, by = "dest")
+final_table
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

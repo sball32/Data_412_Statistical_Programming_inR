@@ -1,0 +1,140 @@
+---
+title: "HW6"
+author: "Sydney Ball"
+date: "`r Sys.Date()`"
+output: html_document
+---
+### Libraries
+```{r message=FALSE}
+library(tidyverse)
+library(devtools)
+```
+
+### Code:
+```{r}
+ut_ld <- untidydata::language_diversity
+view(ut_ld)
+```
+devtools::install_github("jvcasillas/untidydata")
+
+### Question 1:
+The data set is too long (444 rows) and should be wider in order to become more useful and understandable. Use and show R code to produce a table that is a wider data table version of the original data table.
+```{r}
+ut_ld %>% 
+  pivot_wider(names_from = Measurement, values_from = Value) ->ut_ld2
+ut_ld2
+```
+
+### Question 3:
+Now use and show R code that will arrange the Continents in alphabetical order. Print the first 40 rows. A partial table showing rows 35 – 40 is given below.
+```{r}
+ut_ld2%>%
+  arrange(Continent) %>% 
+  print(n=40) ->ut_ld3
+```
+
+### Question 4:
+Now use and show R code that will only produce Asian countries in the data table. There are 16 Asian countries.
+```{r}
+ut_ld3 %>% 
+  filter(Continent == "Asia")
+
+```
+
+### Question 5:
+Enter the R code untidydata and then select pre_post You should produce the following R data call of untidydata::pre_post Produce the pre_post table that shows all 16 rows.
+```{r}
+pre_post1 <-untidydata::pre_post 
+pre_post1 
+  
+```
+
+### Question 6:
+For the pre_post data table, Use and show R code that will eliminate the under scores for the variable spec. 
+```{r}
+pre_post1 %>%
+  mutate(spec = gsub("_", "", spec))
+```
+
+### Question 7:
+Use and show R code that imports thespread sheet into R. Assign your imported
+data to the variable covid.
+```{r}
+library(readr)
+time_series_covid19_confirmed_global <- read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")
+
+coivd19 <- time_series_covid19_confirmed_global
+```
+
+### Question 8: 
+The covid data table is too wide. Apply and show R tyding code that will create a longer data table and then print 25 rows of the new data table. A partial table is given below.
+```{r}
+coivd19 %>% 
+  pivot_longer(cols = -c("Province/State", "Country/Region", "Lat", "Long"), 
+               names_to = "Date", 
+               values_to = "Cases") %>% 
+  print(n=25) -> covid19_1
+
+```
+
+### Question 9:
+Now use and show R code that changes your table from number 8 and will produce a table that only shows data for the countries Vietnam, Thailand, and Singapore. When printed, the first ten rows automatically show data for Singapore.
+```{r}
+covid19_1 %>% 
+  filter(`Country/Region` %in% c("Vietnam", "Thailand", "Singapore")) %>%
+  arrange(`Country/Region`) %>% 
+  print(n=10) ->covid19_2
+```
+
+### Question 10:
+
+#### 10.A
+Use and show R code to find the date on which Singapore experienced 12,693 cases (Code so that a data table shows relevant variables and the answer in the console) Indicate what the answer is.
+```{r}
+covid19_2 %>% 
+  filter(Cases == 12693)
+```
+  It seems that Singapore experienced 12,693 cases on 4/25/20.
+
+#### 10.B
+Use and show R code to find the maximum number of covid-19 cases experienced by the country of Thailand (Code so that a data table shows relevant variables and the answer in the console) Indicate what the answer is.
+```{r}
+covid19_2 %>% 
+  filter(`Country/Region` == "Thailand") %>% 
+  slice_max(order_by = Cases)
+  
+```
+  It seems that the max number of cases in Thailand was 4,728,182 cases in the month of March 2023. 
+  
+#### 10.C
+Use and show R code to find the total number of cases for all three countries together (Vietnam, Thailand, and Singapore)
+```{r}
+covid19_2 %>%
+  summarize(total_cases = sum(Cases, na.rm = TRUE))
+```
+  The total number of cases in Vietnam, Thailand, and Singapore was a whopping 7,133,799,088.	
+
+#### 10.D
+Use and show R code to find the total number of cases for each of the three countries (Vietnam, Thailand, and Singapore). Indicate what the answer is for each individual country.
+```{r}
+covid19_2 %>%
+  filter(`Country/Region` == "Vietnam") %>%
+  summarize(total_cases = sum(Cases, na.rm = TRUE)) ->covid19_V
+
+covid19_2 %>%
+  filter(`Country/Region` == "Thailand") %>%
+  summarize(total_cases = sum(Cases, na.rm = TRUE)) ->covid19_T
+
+covid19_2 %>%
+  filter(`Country/Region` == "Singapore") %>%
+  summarize(total_cases = sum(Cases, na.rm = TRUE)) ->covid19_S
+
+print(c(covid19_V, covid19_T, covid19_S))
+
+```
+The total COVID cases for Vietnam 4,314,591,370. The total COVID cases for Thailand 2,095,658,184. The total COVID cases for Singapore 723,549,534.
+
+
+
+
+

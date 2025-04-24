@@ -1,0 +1,143 @@
+---
+title: "HW8"
+author: "Sydney Ball"
+date: "`r Sys.Date()`"
+output: html_document
+---
+##Library
+```{r message=FALSE}
+library(tidyverse)
+```
+
+## Question 1:
+Use R code to write the content of the string "Alaska" without the quotes.
+```{r}
+q1_str <- ("Alaska")
+noquote(q1_str)
+```
+
+## Question 2:
+Use R code to combine the strings "bo" , "nan" , "za". Separate each string with a backslash
+```{r}
+combined_string <- str_c(c("bo", "nan", "za"), collapse = "\\")
+combined_string
+```
+
+## Question 3:
+For the string, "Mississippi" use R code that will extract the third character through the 6th character and all characters in between
+```{r}
+q3_str <- c("Mississippi")
+str_sub(q3_str, 3,6)
+```
+
+## Question 4:
+Use R code to convert the string “california” to CALIFORNIA (all caps no quotes)
+```{r}
+q4_str <- c("california")
+q4_str2 <- str_to_upper(str_sub(q4_str))
+noquote(q4_str2)
+```
+
+## Question 5:
+Using the common words of stringr :: words, produce R code that will generate all words that start with a u a v or a q
+```{r include=FALSE}
+stringr ::  words
+words
+```
+
+
+```{r}
+str_subset(words,  "^[au\av\aq]")
+```
+
+## Question 6:
+Using the common words of stringr :: words, produce R code that will generate seven letter words that end in t
+```{r}
+str_subset(words, "^......t$")
+```
+
+## Question 7:
+Using the common words of stringr :: words, produce R code that will generate words that end al or el.
+```{r}
+str_subset(words, "(al|el)$")
+```
+
+## Question 8:
+Use stringr functions in order to capitalize all entries for the variable trans of the mpg data frame.
+```{r}
+mpg$trans <- str_to_upper(mpg$trans)
+head(mpg)
+```
+
+## Question 9:
+Use a stringr function(s) to find all words that begin with p and end with t from the stringr:words data bank. How many of these words are there?
+```{r}
+num1 <- str_subset(words, "^[p]")
+num2 <- str_subset(words, "[t]$")
+union(num1, num2) -> q9
+length(q9)
+```
+There are 207 words that either beging with the letter p or end with the letter t. 
+
+## Question 10:
+Use a stringr function to determine how many common words from the stringr::words data bank begin with a v.
+```{r}
+q10_str <- str_subset(words, "^[v]")
+length(q10_str)
+```
+There are 8 words that being with the letter v from the common words from the stringr::words. 
+
+## Question 11:
+Use a string R function and the stringr :: words data set to find all four letter words that have the letter v in any location.
+```{r}
+ str_view( words, "v")
+```
+
+## Question 12:
+Use a string R function and the stringr :: words data set to find all words that begin with a vowel and end with a vowel.
+```{r}
+str_subset(words, "^[aeiou].*[aeiou]$")
+```
+
+## Question 13:
+Use and show a string R function and the stringr :: words data set to find all words that end in x using the str_subset string r function and the str_detect string r function.
+```{r}
+words_ending_in_x_subset <- str_subset(words, "x$")
+words_ending_in_x_subset
+words_ending_in_x_detect <- words[str_detect(words, "x$")]
+words_ending_in_x_detect
+```
+
+## Question 14:
+Use and show a string R function and the stringr :: words data set to find all words that contain the four vowels a, e, i, and o.
+```{r}
+q14_str <- str_subset(words,  "[a|e|i|o]")
+head(q14_str)
+```
+
+## Question 15:
+Use and show a string R function and the stringr :: words data set to confirm or disprove that the letter q is always followed by the letter u
+```{r}
+ str_view(words, "qu")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

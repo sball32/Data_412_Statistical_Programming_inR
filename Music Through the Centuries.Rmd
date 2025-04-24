@@ -1,0 +1,927 @@
+---
+title: "Music Through the Modern Centuries"
+author: "Sydney Ball & Riley Valashinas"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    code_folding: hide
+    number_sections: yes
+    includes:
+    toc: yes
+    toc_float: yes
+    code_download: yes
+    theme: spacelab
+    highlight: tango
+    df_print: kable
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+-   *We chose not to directly share or embed our data in the HTML
+    output, due to the sheer size of the datasets. Instead, we're giving
+    others the option to download our datasets if they wish (see line
+    12), without overloading their computers and slowing them down more
+    by unnecessarily attaching large datasets.*
+
+# Library:
+
+-   We have installed numerous libraries including the Tidyverse, Kable,
+    and more to ensure our data analysis and .html are through and look
+    aesthetic.
+
+```{r, warning=FALSE,message=FALSE}
+library(readxl)
+library(tidyverse)
+library(patchwork)
+library(kableExtra)
+library(dplyr)
+library(plotly)
+```
+
+------------------------------------------------------------------------
+
+# Datasets:
+
+## Dataset: Music from 1950 to 2019
+
+```{r message=FALSE, warning=FALSE}
+#MusicDataset <- read_excel("/Users/rileyvalashinas/MusicDataset.xlsx")
+MusicDataset <- read_excel("/Users/sydneyball/Desktop/Data 412/project/MusicDataset.xlsx")
+```
+
+Data found from Kaggle. This dataset provides a list of lyrics from 1950
+to 2019 describing music metadata as sadness, danceability, loudness,
+acousticness, etc. Authors also provide some information as lyrics which
+can be used to natural language processing.
+
+Citation: Moura, Luan; Fontelles, Emanuel; Sampaio, Vinicius; França,
+Mardônio (2020), "Music Dataset: Lyrics and Metadata from 1950 to 2019",
+Mendeley Data, V3, doi: 10.17632/3t9vbwxgr5.3
+
+[Link to Music Dataset
+1950-2019](https://www.kaggle.com/datasets/saurabhshahane/music-dataset-1950-to-2019/code)
+
+## Dataset: Top Songs in the World
+
+```{r, warning=FALSE,message=FALSE}
+#Top_Song <- read_excel("/Users/rileyvalashinas/Top Songs in the World.xlsx", 
+    #skip = 1)
+Top_Song <- read_excel("/Users/sydneyball/Desktop/Data 412/project/Top Songs in the World.xlsx", 
+      skip = 1)
+```
+
+Dataset was also found on Kaggle. "Top Songs of the World" is a
+collection of information about popular songs spanning various decades
+and genres. The dataset includes details such as the ranking of songs,
+the respective artists, titles, release years, sales figures, streaming
+statistics, download counts, radio play metrics, and a numerical rating.
+
+[Link to Top Songs in the World
+Dataset](https://www.kaggle.com/datasets/shiivvvaam/top-songs-of-the-world/data)
+
+------------------------------------------------------------------------
+
+# Dataset Breakdown:
+
+## Music Dataset 1950-2019:
+
+### Structure:
+
+```{r}
+view(MusicDataset)
+length(col(MusicDataset))
+```
+
+-   There are 851160 observations
+
+```{r}
+length(MusicDataset)
+```
+
+-   There are 30 columns.
+
+In the Music 1950-2019 there are 851160 original unique
+observations/rows within the data. There are also 31 columns or
+variables that are measured within the data.
+
+### Column names:
+
+-   Here we look at the names of all of the columns in the dataset.
+
+```{r}
+column_names_1 <- names(MusicDataset)
+print(column_names_1)
+```
+
+### Artist Names:
+
+-   Artists name = categorical (mostly unique values)
+
+    -   We see that there are some artists whose names are repeated
+        because that have many songs which appear on the dataset.
+
+    ```{r}
+    artist_count <- MusicDataset %>%
+      group_by(artist_name) %>%
+      summarise(Count = n()) %>%
+      arrange(desc(Count))
+
+    top_20_artists <- artist_count %>%
+      top_n(20, Count)
+
+    ggplot(top_20_artists, aes(x = reorder(artist_name, Count), y = Count)) +
+      geom_col(fill = "blue4") +
+      geom_text(aes(label = Count), position = position_dodge(width = 0.9), hjust = -0.2, size = 3) +
+      coord_flip() +
+      labs(title = "Top 20 Songs by Artists from 1950 to 2019",
+           x = "Artist",
+           y = "Count of Top Songs") +
+      theme_minimal()
+    ```
+
+    -   This graph illustrates the top 20 artists in the Music Dataset
+        based on their commonality in the spreadsheet.
+
+### Track Name:
+
+-   Track Name = categorical (unique value) Release date = categorical
+    (years 1950 till 2019)
+
+### Release Date:
+
+-   Release date in this dataset ranges from 1950-2019 strictly. However
+    there is a denser distribution of songs published in the later 1975
+    to the early 2000s.
+
+```{r}
+ggplot(MusicDataset, aes(x = release_date)) +
+  geom_histogram(binwidth = 1, fill = "skyblue2", color = "blue4") +
+  theme_minimal() +
+  labs(title = "Distribution of Song Releases Over Time",
+       x = "Release Year",
+       y = "Count of Songs")
+```
+
+### Genre:
+
+-   Genre = categorical (blues, country, hip hop, jazz, pop, reggae,
+    rock)
+
+```{r, warning=FALSE,message=FALSE}
+table(MusicDataset$genre)
+```
+
+### Lyrics:
+
+-   Lyrics = All the lyrics in a single song
+
+### Descriptive Varaibles:
+
+-   Descriptive variables = The remaining 23 decimal variables are
+    measured on a ratio decimal scale--this is not evidential, but human
+    observation.
+
+### Topic:
+
+-   Topic = Categorical based on feelings, music night/time, obscene,
+    romantic, sadness, violence, world/life
+
+```{r, warning=FALSE,message=FALSE}
+table(MusicDataset$topic)
+```
+
+### Variable Breakdown:
+
+The total break down for the Music Dataset from 1950 to 2019 is: - 23
+decimal variables - 5 string variables - 3 integer variables
+
+------------------------------------------------------------------------
+
+## Top Song:
+
+### Structure:
+
+```{r, warning=FALSE,message=FALSE}
+length(col(Top_Song))
+```
+
+-   There are 38800 observations.
+
+```{r, warning=FALSE,message=FALSE}
+length(Top_Song)
+```
+
+-   There are 8 columns.
+
+In the Top Songs in the world dataset there are 38800 observations or
+top songs. There are also 8 columns or variables which the songs are
+measured by.
+
+### Columns names:
+
+```{r, warning=FALSE,message=FALSE}
+column_names_2 <- names(Top_Song)
+print(column_names_2)
+```
+
+### Artist Names:
+
+-   Artist = Includes all the names of artists in the top_songs
+
+    -   It is important to note that some artist names will occur twice
+        due to the artist having a top song more than once.
+
+    ```{r, warning=FALSE,message=FALSE}
+    artist_counts_2 <- Top_Song %>%
+      group_by(Artist) %>%
+      summarise(Count = n()) %>%
+      arrange(desc(Count))
+
+    top_20_artists_2 <- artist_counts_2 %>%
+      top_n(20, Count)
+
+    ggplot(top_20_artists_2, aes(x = reorder(Artist, Count), y = Count)) +
+      geom_col(fill = "skyblue2") +
+      geom_text(aes(label = Count), position = position_dodge(width = 0.9), hjust = -0.2, size = 3) +
+      coord_flip() +
+      labs(title = "Top 20 Artists by Number of Top Songs",
+           x = "Artist",
+           y = "Count of Top Songs") +
+      theme_minimal()
+    ```
+
+    -   This graph illustrates the top 20 artists on the top songs data
+        set and a count of their tops songs.
+
+### Track Names:
+
+-   Title = qualitative name of the song Year = categorical year song
+    was published
+
+```{r, warning=FALSE,message=FALSE}
+ggplot(Top_Song, aes(x = Year)) +
+  geom_histogram(binwidth = 1, fill = "skyblue2", color = "blue4") +
+  theme_minimal() +
+  labs(title = "Distribution of Top Songs Releases Over Time",
+       x = "Release Year",
+       y = "Count of Songs")
+```
+
+-   This graph highlights the release years of songs in the dataset. We
+    see that the bulk of songs in the spreadsheet are comprised from the
+    late 1950s to the early 2000s.
+
+### Relase Year:
+
+-   Asses the range of release years
+
+```{r, warning=FALSE,message=FALSE}
+max_year <- max(Top_Song$Year, na.rm = TRUE)
+min_year <- min(Top_Song$Year, na.rm = TRUE)
+print(paste("The range of years is from", min_year, "to", max_year))
+```
+
+### Sales:
+
+-   Sales = quantitative The total sales figure for each song
+
+### Streams:
+
+-   Streams = quantitative The number of streams the song has received.
+
+### Downloads:
+
+-   Downloads = quantitative The number of downloads for the song.
+
+### Radio Plays:
+
+-   Radio Plays = quantitative The number of times the song has been
+    played on the radio.
+
+### Rating:
+
+-   Rating = quantitative A numerical rating or score associated with
+    the song.
+
+------------------------------------------------------------------------
+
+# Clean Data:
+
+## Music Dataset 1950-2019 Cleaning:
+
+```{r, warning=FALSE,message=FALSE}
+#Convert columns into proper variable category
+MusicDataset$release_date <- as.Date(MusicDataset$release_date, format = "%Y")
+
+#Get rid of any missing values
+MusicDataset <- na.omit(MusicDataset)
+
+#Remove any and all duplicates
+MusicDataset <- MusicDataset[!duplicated(MusicDataset), ]
+
+#Standardize all text in the data set
+MusicDataset$genre <- tolower(MusicDataset$genre)
+```
+
+-   We have cleaned the Music Dataset by:
+    -   converting the columns into the proper variable category
+    -   then removing any missing values. Its important to note that our
+        data was found on Kaggle and was already quite clean.
+    -   We then removed possible duplicates and standardized the text in
+        the data. All of these decisions are stand moves when cleaning a
+        large dataset.
+
+## Top Song Cleaning:
+
+```{r, warning=FALSE,message=FALSE}
+#Standardize the column names to ensure names are consistent and descriptive
+colnames(Top_Song) <- c("Artist", "Title", "Year", "Sales", "Streams", "Downloads", "RadioPlays", "Rating")
+
+#Make sure the variable 'Year' is numeric
+Top_Song$Year <- as.numeric(Top_Song$Year)
+
+#Remove any of the missing values in the data set
+Top_Song <- na.omit(Top_Song)
+Top_Song$Sales <- ifelse(is.na(Top_Song$Sales), mean(Top_Song$Sales, na.rm = TRUE), Top_Song$Sales)
+
+#Remove any possible duplicates from the data
+Top_Song <- na.omit(Top_Song)
+Top_Song$Sales <- ifelse(is.na(Top_Song$Sales), mean(Top_Song$Sales, na.rm = TRUE), Top_Song$Sales)
+
+#We decided to standardize the printing of all artist names
+Top_Song$Artist <- tolower(Top_Song$Artist)
+
+#Remove possible outliers in the data
+Top_Song <- subset(Top_Song, Sales <= quantile(Sales, 0.99))
+```
+
+-   For the Top Songs dataset we:
+    -   decided to first rename all the columns, name sure the column
+        year is a numeric variable. - We then moved through standard
+        procedure of removing missing values and duplicate values. -
+        Finally we standardized all the text and found that there could
+        be possible outliers within the data and removed those for more
+        standardized usage.
+
+Is the data (Music Dataset & Top Songs) clean enough? - To ensure that
+the both datasets were cleaned well and to a standard which we can then
+use them to do more statistical analysis we look at the sums of omitted
+values in each column.
+
+```{r, warning=FALSE,message=FALSE}
+colSums(is.na(MusicDataset))
+colSums(is.na(Top_Song))
+```
+
+------------------------------------------------------------------------
+
+# Make the cleaned data into Tribble:
+
+-   Then we make the clean datasets into a tribble to be able to
+    manipulate easier and observe a small amount of the data in an easy
+    to read format.
+
+```{r, warning=FALSE,message=FALSE}
+clean_MusicDataset <- as_tibble(MusicDataset)
+clean_topSong <- as_tibble(Top_Song)
+```
+
+------------------------------------------------------------------------
+
+# Characterize data
+
+-   We call the summary of each cleaned dataset and we also assess the
+    structure of the data now that it is renamed and all the n/a
+    observations are cleared.
+
+```{r include=FALSE}
+#Summarize the data
+summary(clean_MusicDataset)
+summary(clean_topSong)
+
+#Observe the structure of the data
+str(clean_MusicDataset)
+str(clean_topSong)
+```
+
+-   We characterize the data to make sure that all our cleaning was
+    effective and to understand the spread of the data and observations.
+    Characterizing the data also allows us to better understand possible
+    comparisons between variables that we can make. This part is
+    critical to our next steps of evidential data analysis.
+
+## Music Dataset 1950-2019
+
+```{r, warning=FALSE,message=FALSE}
+#Mean release date
+mean_musicdata <- mean(clean_MusicDataset$release_date, na.rm = TRUE)
+
+#Median release date
+median_musicdata <- median(clean_MusicDataset$release_date, na.rm = TRUE)
+
+#Standard deviation of release date
+sd_musicdata <- sd(clean_MusicDataset$release_date, na.rm = TRUE)
+
+#Print findings
+print(paste("The mean number of songs plublished from the Music Dataset from 1950 to 2019 is", mean_musicdata, "and the median is", median_musicdata, "with a standard deviation of", round(sd_musicdata,2),"years."))
+```
+
+## Top Song Dataset
+
+```{r, warning=FALSE,message=FALSE}
+#Mean release date
+mean_topsong <- mean(clean_topSong$Year, na.rm = TRUE)
+
+#Median release date
+
+median_topsong <- median(clean_topSong$Year, na.rm = TRUE)
+
+#Standard deviation of release date
+sd_topsong <- sd(clean_topSong$Year, na.rm = TRUE)
+
+#Print findings
+print(paste("The mean number of songs plublished from the Top Song dataset is the year", round(mean_topsong,2), "with the median year being", round(median_topsong,2), "with a standard deviation of", round(sd_topsong,2), "years."))
+```
+
+-   We found it important to highlight that although these datasets had
+    similar topics, the range of music relative to date may be
+    different. We have be highly speculative of release date or year of
+    publication so far becuase it can help us explain possible outside
+    factors ehich infleunce the popularity of music withing the
+    population.
+
+------------------------------------------------------------------------
+
+Our main goal is to analyze how different songs provoke different
+emotions in listeners. This means our focus is more tailored towards the
+Music Dataset from 1950-2019. After we so analysis of this dataset, we
+wanted to look at the cross over between emotion illicit from listening
+to a song and the possible correlation relationship between popularity.
+
+------------------------------------------------------------------------
+
+# Assess Relationships using ggplots
+
+-   We have put together 3 various bar graphs by date, genre, or topic
+    based on the count within the dataset. The bar graphs help us
+    characterize and understand the spread of the data.
+
+## Release Year by Topic and Genre
+
+```{r, warning=FALSE,message=FALSE}
+plot1 <- ggplot(data = clean_MusicDataset) + 
+  geom_bar(aes(x = release_date), fill = "skyblue2") +
+  xlab("Date of Release") +
+  ylab("Count") +
+  ggtitle("Count of Songs Release by Year")
+
+plot2 <- ggplot(data = clean_MusicDataset) + 
+  geom_bar(aes(x = genre), fill = "blue4") +
+  xlab("Genre") +
+  ylab("Count") +
+  ggtitle("Count of Songs by Genre")
+
+plot3 <- ggplot(data = clean_MusicDataset) + 
+  geom_bar(aes(x = topic), fill = "blue4") +
+  xlab("Topic") +
+  ylab("Count") +
+  ggtitle("Count of Songs by Topic")
+  
+plot1 / (plot2 + plot3)
+
+```
+
+### Assess Relationship by Numeric Variables:
+
+-   Here we have grouped the relationships we have begun looking at.
+
+### Danceability by Loudness
+
+```{r, warning=FALSE,message=FALSE}
+correlation_coefficient1 <- cor(clean_MusicDataset$danceability, clean_MusicDataset$loudness)
+plot4 <-ggplot(data=clean_MusicDataset) +
+  geom_point(mapping = aes(x = danceability, y= loudness), color = "skyblue2") +
+  geom_smooth(mapping = aes(x = danceability, y=loudness), color = "blue4") +
+  xlab("Dance Rating") +
+  ylab("Loudness/Noise Rating") +
+  ggtitle("Dance by Loud Rating", correlation_coefficient1)
+
+plot4a <-ggplot(data = clean_MusicDataset, mapping = aes(x = danceability, y = loudness)) +
+  geom_point(color = "skyblue2") + 
+  geom_smooth(method = "lm", se = FALSE, color = "blue4") +  
+  facet_wrap(~genre) + 
+  xlab("Dance Rating") +
+  ylab("Loudness/Noise Rating") +
+  ggtitle("Dance by Loudness Rating Across Genres")
+
+plot4b <- ggplot(data = clean_MusicDataset, mapping = aes(x = danceability, y = loudness)) +
+  geom_point(color = "skyblue2") + 
+  geom_smooth(method = "lm", se = FALSE, color = "blue4") +  
+  facet_wrap(~topic) + 
+  xlab("Dance Rating") +
+  ylab("Loudness/Noise Rating") +
+  ggtitle("Dance by Loudness Rating Across Topics")
+
+plot4
+plot4a
+plot4b
+```
+
+-   This grouping is danceability by loudness. There are no apparent
+    strong relationships among these variables, but we can use some
+    statistical tests to determine this for sure. To learn this, we can
+    look at r, Pearson's correlation coefficient, and test the
+    significance of said correlation. First is the general test; the
+    null hypothesis is that there is no statistically significant
+    relationship between danceability and loudness.
+
+```{r, warning=FALSE,message=FALSE}
+cor.test(clean_MusicDataset$danceability, clean_MusicDataset$loudness)
+```
+
+The p-value falls well below the standard significance level of 0.05,
+meaning that we can reject the null hypothesis. There is a statistically
+significant relationship between danceability and loudness.
+
+We can also see if this holds by genre:
+```{r, warning=FALSE,message=FALSE}
+genres <- c('blues', 'country', 'hip hop', 'jazz', 'pop', 'reggae', 'rock')
+genres_d_l <- for (i in genres){
+  newtr <- filter(clean_MusicDataset, genre==i)
+  print(i)
+  print(cor.test(newtr$danceability, newtr$loudness))
+}
+```
+Every p-value is far below the significance level of 0.05. We can reject the null hypothesis for each level of the variable 'genre', showing that there is a statistically significant relationship between loudness and danceability regardless of genre.
+
+Next, we'll see if it holds by topic. (Note: whereas we used a self-made genres list vector for the genres and redefined it each time, to show a different technique, for all statistics that separate by topic, we'll use this same 'topicsList' variable that we got from the 'unique()' command.
+```{r, warning=FALSE, message=FALSE}
+topicsList <- unique(clean_MusicDataset$topic)
+topicsList
+topics_d_l <- for (i in topicsList){
+  newtrib <- filter(clean_MusicDataset, topic==i)
+  print(i)
+  print(cor.test(newtrib$danceability, newtrib$loudness))
+}
+```
+- There are some surprising (and mixed) observations here. We can see that p-values that fall below the significance level of 0.05 correspond to songs with the topics 'violence', 'romantic', 'music', and 'world/life' — in those cases, we can reject the null hypothesis, and be reasonably sure that there is a statistically signfiicant correlation between danceability and loudness. However, p-values that are above the significance level corresponds to songs of the topics 'feelings', 'night/time', 'obscene', and 'sadness' — in those cases, we fail to reject the null hypothesis, and can assume that there is no statistically significant correlation between danceability and loudness.
+
+### Sadness by Feelings
+
+```{r, warning=FALSE,message=FALSE}
+correlation_coefficient2 <- cor(clean_MusicDataset$sadness, clean_MusicDataset$feelings)
+plot5 <- ggplot(data=clean_MusicDataset) +
+  geom_point(mapping = aes(x = sadness, y= feelings), color = "skyblue2") +
+  geom_smooth(mapping = aes(x = sadness, y=feelings), color = "blue4") +
+  xlab("Sadness Rating") +
+  ylab("Feelings Rating") +
+  ggtitle("Sadness by Feelings Rating", correlation_coefficient2)
+
+plot5a <-ggplot(data = clean_MusicDataset, mapping = aes(x = sadness, y = feelings)) +
+  geom_point(color = "skyblue2") + 
+  geom_smooth(method = "lm", se = FALSE, color = "blue4") +  
+  facet_wrap(~genre) + 
+  xlab("Sadness Rating") +
+  ylab("Feelings Rating") +
+  ggtitle("Sadness by Feelings Rating Across Genres")
+
+plot5b <-ggplot(data = clean_MusicDataset, mapping = aes(x = sadness, y = feelings)) +
+  geom_point(color = "skyblue2") + 
+  geom_smooth(method = "lm", se = FALSE, color = "blue4") +  
+  facet_wrap(~topic) + 
+  xlab("Sadness Rating") +
+  ylab("Feelings Rating") +
+  ggtitle("Sadness by Feelings Rating Across Topics")
+
+plot5
+plot5a
+plot5b
+```
+
+-   This grouping is sadness by feelings. There are no apparent strong
+    relationships among these variables by genre or in general, but we
+    can test to make sure using a Pearson's r coefficient, generally and
+    by genre. The null hypothesis is that there is no relationship
+    between sadness and feelings rating (first in general, second across
+    genres).
+
+```{r, warning=FALSE,message=FALSE}
+corr_pt2 <- cor.test(clean_MusicDataset$sadness, clean_MusicDataset$feelings)
+corr_pt2
+```
+
+Here, we can see that at a significance level of 0.05, the p-value is
+clearly small enough to reject the null hypothesis. There is clearly a
+relationship between sadness and feelings ratings, and we can see from
+the plot that that appears to be a negative relationship (so as sadness
+rating goes up, feelings rating goes down).
+
+```{r, warning=FALSE,message=FALSE}
+genres <- c('blues', 'country', 'hip hop', 'jazz', 'pop', 'reggae', 'rock')
+genres_s_f <- for (i in genres){
+  newtr <- filter(clean_MusicDataset, genre==i)
+  print(i)
+  print(cor.test(newtr$feelings, newtr$sadness))
+}
+```
+These results show us that the p-values in each genre were small enough to reject the null hypothesis in every genre except hip-hop, where there does not seem to be a statistically significant relationship between feelings ratings and sadness ratings.
+
+Finally, we'll see if this connection holds at each level of the variable 'topic':
+```{r, warning=FALSE, message=FALSE}
+topics_s_f <- for (i in topicsList){
+  newtribb <- filter(clean_MusicDataset, topic==i)
+  print(i)
+  print(cor.test(newtribb$sadness, newtribb$feelings))
+}
+```
+We can see that for the topics 'feelings', 'night/time', 'world/life', and 'sadness', the p-value is certainly below the significance level of 0.05. We can reject the null hypothesis, and conclude that for songs about 'feelings', 'night/time', 'world/life', and 'sadness', there is a statistically significant relationship between feelings ratings and sadness ratings, and we can see from the charts that this relationship seems to trend in the negative direction. However, for songs that are 'romantic', 'obscene', or about 'violence' or 'music', this relationship does not hold, as the p-values are not small enough to reject the null hypothesis at a significance level of 0.05.
+
+### Obscene by Romantic
+
+```{r, warning=FALSE,message=FALSE}
+correlation_coefficient3 <- cor(clean_MusicDataset$obscene, clean_MusicDataset$romantic)
+plot6 <- ggplot(data=clean_MusicDataset) +
+  geom_point(mapping = aes(x = obscene, y= romantic), color = "skyblue2") +
+  geom_smooth(mapping = aes(x = obscene, y=romantic), color = "blue4") +
+  xlab("Obscene Rating") +
+  ylab("Romantic Rating") +
+  ggtitle("Obscene by Romantic Rating", correlation_coefficient3)
+
+plot6a <-ggplot(data = clean_MusicDataset, mapping = aes(x = obscene, y = romantic)) +
+  geom_point(color = "skyblue2") + 
+  geom_smooth(method = "lm", se = FALSE, color = "blue4") +  
+  facet_wrap(~genre) + 
+  xlab("Obscene Rating") +
+  ylab("Romantic Rating") +
+  ggtitle("Obscene by Romantic Rating Across Genres")
+
+plot6b <-ggplot(data = clean_MusicDataset, mapping = aes(x = obscene, y = romantic)) +
+  geom_point(color = "skyblue2") + 
+  geom_smooth(method = "lm", se = FALSE, color = "blue4") +  
+  facet_wrap(~topic) + 
+  xlab("Obscene Rating") +
+  ylab("Romantic Rating") +
+  ggtitle("Obscene by Romantic Rating Across Topics")
+
+plot6
+plot6a
+plot6b
+
+```
+
+-   This grouping is by obscene and romantic. Once again there is not
+    apparent strong relationship (positive or negative) among these two
+    variables by either genre or topic. But it would be helpful to know
+    if there is a real relationship between obscenity and romantic
+    rating, and if it just appears to have no correlation, so we'll use
+    Pearson's r coefficient again. This will test by just obscenity and
+    romantic rating as a whole, without looking at any groupings:
+
+```{r, warning=FALSE,message=FALSE}
+cor.test(clean_MusicDataset$romantic, clean_MusicDataset$obscene)
+```
+
+So we can clearly see that there is a statistically significant
+relationship between x, romantic rating, and y, obscenity rating, at a
+significance level of 0.05. We reject the null hypothesis, and can see
+that there is a relationship between the obscenity and romantic content
+of a song. Looking at the graph seems to show that this correlation is
+in the negative direction.
+
+- Further, we can start to see if this relationships hold when grouped by genre. The null hypothesis we are testing here is that there is no relationship between romantic content and obscenity content when grouped by genre, at a significance level of 0.05. We'll do this by using a for-loop to separate the data by genre, and then to check the significance of the value of r:
+
+```{r, warning=FALSE,message=FALSE}
+genres <- c('blues', 'country', 'hip hop', 'jazz', 'pop', 'reggae', 'rock')
+genres_o_r <- for (i in genres){
+  newtr <- filter(clean_MusicDataset, genre==i)
+  print(i)
+  print(cor.test(newtr$obscene, newtr$romantic))
+}
+```
+- We can see that for all seven genres, the r value falls well below 0.05, meaning that we reject the null hypothesis. There is a clear relationship between obscenity and romantic content by genre, and the graphs seem to universally display a negative relationship.
+
+Finally, let's check and see if this relationship holds across topics:
+```{r}
+topics_o_r <- for (i in topicsList){
+  newtribble <- filter(clean_MusicDataset, topic==i)
+  print(i)
+  print(cor.test(newtribble$obscene, newtribble$romantic))
+}
+```
+We see from the results above that across nearly all topics, we can reject the null hypothesis, indicating that there is a statistically significant relationship between obscenity and romantic content. However, this relationship does not hold for songs about 'feelings'.
+
+### Genre by Length of Song
+
+```{r, warning=FALSE,message=FALSE}
+ggplot(data = clean_MusicDataset) +
+  geom_boxplot(mapping = aes(x=genre, y=len), color = "blue4", fill = "skyblue2") +
+  xlab("Genre") +
+  ylab("Length of Song") +
+  ggtitle("Length of Song by Genre")
+
+```
+
+-   This boxplot allows us to visualize the distribution of song lengths
+    by genre. We see that blues and country have a generally shorter
+    song length. Reggae and hip hop are generally longer with high
+    median lengths than all other song genres.
+
+```{r, warning=FALSE,message=FALSE}
+meanset <- mean(clean_MusicDataset$len)
+lens <- clean_MusicDataset%>%
+  group_by(genre)%>%
+  summarise(sds=sd(len), means=mean(len), zs=((means-meanset)/sds), probs=pnorm(zs))
+lens
+```
+
+-   But to confirm, we can run some calculations to see if there are
+    statistically significant differences in song lengths by genre.
+    We've built out this tibble (see above) with all of the component
+    pieces of a z-score test of significance (between the average length
+    of each song by genre and the average length of all songs in the
+    dataset regardless of genre), then extracted from that a p-value.
+    The null hypothesis is that there is no difference in song length by
+    genre. None of the genres come close to having a statistically
+    significant p-value at a significance level of 0.05, so we cannot
+    reject the null hypothesis --- there's no evidence to indicate that
+    there is a meaningful difference in song length by genre.
+
+------------------------------------------------------------------------
+
+# Combine Data
+
+The data is joined based on Artist name. We first need the mutate the
+variable name from the clean Music Dataset because the original name was
+artist_name. Now that both data sets have the same name for Artists, we
+can inner join the data. In the joined dataset we see that there are
+many artists with multiple songs.
+
+```{r, warning=FALSE,message=FALSE}
+#We first need to change the column name from the music dataset to match the name in the top songs dataset
+clean_MusicDataset <- rename(clean_MusicDataset, Artist = artist_name)
+
+#Inner join the two data sets based on Artist name 
+joined_dataset <- inner_join(clean_MusicDataset, clean_topSong, by = "Artist")
+
+#Remove the column track name from the Music Dataset because it messes with the organization of the joined set
+joined_dataset_2 <- select(joined_dataset, -track_name, -release_date)
+
+#Rearrange the dataset to make is artist then title then year and the rest of the variables 
+final_joined_dataset <- joined_dataset_2 %>%
+  select(Artist, Title, Year, everything())
+kable(head(final_joined_dataset,1))
+
+#Use the final_joined_dataset for other analysis
+```
+
+-   Now that we have joined the cleaned dataset we can now begin to
+    characterize the joined data. Here we are analyzing the top artist
+    by mean sales, mean stream, mean downloads, and the summary of genre
+    distribution among the joined data. Then to further organize the
+    data we made sure to organize the distribution of songs by artist in
+    descending order--from highest to lowest.
+
+### Average number of Songs per Artist
+
+```{r, warning=FALSE,message=FALSE}
+#We then want to get an understanding of how many songs the top artists have in top songs from the music dataset.
+artist_song_count <- final_joined_dataset %>%
+  group_by(Artist) %>%
+  summarise(number_of_songs = n()) %>% 
+  arrange(desc(number_of_songs))
+kable(head(artist_song_count,15))
+```
+
+### Average number of Song Sales per Artist
+
+```{r, warning=FALSE,message=FALSE}
+#Artist by sales
+artist_sales <- final_joined_dataset %>%
+  group_by(Artist) %>%
+  summarise(average_sales = mean(Sales,  na.rm = TRUE)) %>% 
+  arrange(desc(average_sales))
+kable(head(artist_sales, 15))
+```
+
+### Average number of Song Streams per Artist
+
+```{r, warning=FALSE,message=FALSE}
+#Artist by streams
+artist_streams <- final_joined_dataset %>%
+  group_by(Artist) %>%
+  summarise(average_streams = mean(Streams, na.rm = TRUE)) %>% 
+  arrange(desc(average_streams))
+kable(head(artist_streams,15))
+```
+
+### Average number of Song Downloads per Artist
+
+```{r, warning=FALSE,message=FALSE}
+#Artist by downloads
+artist_downloads <- final_joined_dataset %>%
+  group_by(Artist) %>%
+  summarise(average_downloads = mean(Downloads, na.rm = TRUE)) %>% 
+  arrange(desc(average_downloads))
+kable(head(artist_downloads,15))
+```
+
+### Songs by Genre in Descending Order
+
+```{r, warning=FALSE,message=FALSE}
+#genre distribution of songs in joined data 
+genre_distribution1 <- final_joined_dataset %>%
+  group_by(genre) %>%
+  summarise(number_of_songs = n())
+
+# Order by descending number of songs
+genre_distribution2 <- genre_distribution1 %>% 
+  arrange(desc(number_of_songs))
+kable(genre_distribution2)
+
+```
+
+-   To understand the distribution of songs per decade in the joined
+    data we see certain trends among genres and the time they were
+    released. We see that in late 60s there were many rock songs
+    released followed closely by pop songs. This dataset appears to show
+    a noticeable peak in song publishing in the late 60s to early 70s
+    and then the trend among all genres begins to taper off. This could
+    be for a few reasons; maybe there really was such a peak and now
+    fewer songs are released, or, because we performed an inner join,
+    songs that top the charts today aren't represented in the original
+    music dataset, or songs are lasting on the charts longer making it
+    so that there are fewer unique songs in the top charts dataset these
+    days... the list goes on.
+
+```{r}
+#Separate code by decade
+joined_dataset_deade <- final_joined_dataset %>%
+  mutate(decade = floor(Year / 10) * 10)
+
+#Group the data by decade
+count_data <- joined_dataset_deade %>%
+  group_by(decade, genre) %>%
+  summarise(Count = n(), .groups = 'drop') 
+
+# Creating the count plot
+ggplot(count_data, aes(x = decade, y = Count, fill = genre)) + 
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_minimal() +
+  labs(y = "Song Count", x = "Decade", title = "Song Count by Decade and Genre") +
+  theme(legend.position = "top")
+```
+
+------------------------------------------------------------------------
+
+# Use ggplot to observe the data
+
+-   Although we have not focused much on the lyrics variable of each
+    song, we thought it was important to at least observe the top most
+    used words in lyrics. Here we observe the top 20 words that are most
+    often used in songs from the joined dataset. From this we can
+    further understand that words like "heart," "life," and "night" are
+    commonly used and could potentially have a relationship with the
+    feelings and emotions a songs elicits to its listener.
+
+```{r, warning=FALSE,message=FALSE}
+words <- final_joined_dataset %>%
+  mutate(words = strsplit(as.character(lyrics), "\\s+")) %>%
+  unnest(words)
+
+# Step 3 & 4: Count occurrences and arrange
+top_words <- words %>%
+  count(words, name = "count") %>%
+  arrange(desc(count)) %>%
+  slice_head(n = 20) %>%
+  pull(words) # Pull the 'words' column to get just the word list
+
+# top_words now contains the top 20 most common words
+print(top_words)
+```
+
+-   The graph below demonstrates the evolution of feelings across
+    decades. This interactive plot allows us to view the relationships
+    of feelings and the ups and downs of their trends as new songs are
+    published, as listeners opinions change, and possible as the world
+    reflects on the type of music that is published.
+
+```{r, warning=FALSE,message=FALSE}
+data_aggregated <- final_joined_dataset %>%
+  mutate(decade = floor(Year / 10) * 10) %>% 
+  group_by(decade) %>%
+  summarise(across(c(dating, violence, `world/life`, `night/time`, `shake the audience`, `family/gospel`, 
+                     romantic, communication, obscene, `family/spiritual`, `like/girls`, sadness, 
+                     feelings), ~mean(.x, na.rm = TRUE)))  
+
+# Proceed with transforming to long format
+data_long <- data_aggregated %>%
+  pivot_longer(cols = -decade, names_to = "Feeling", values_to = "Value")
+
+# Create the interactive plot
+p <- plot_ly(data = data_long, x = ~decade, y = ~Value, color = ~Feeling, type = 'scatter', mode = 'lines+markers') %>%
+  layout(title = "Trends of Feelings by Decade",
+         xaxis = list(title = "Decade"),
+         yaxis = list(title = "Average Value"))
+p
+```

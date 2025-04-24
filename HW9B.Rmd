@@ -1,0 +1,76 @@
+---
+title: "HW9B"
+author: "Sydney Ball"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+### Question 1: 
+#### The medical term pneumonoultramicroscopicsilicovolcanoconiosis is the longest word in the English language. Using this term, apply stringr code that will produce:
+```{r}
+question1_term <- "pneumonoultramicroscopicsilicovolcanoconiosis"
+str_match(question1_term, "volcano")
+```
+
+```{r}
+str_match(question1_term, "picsilico")
+```
+
+### Question 2: 
+#### Create a general regular expression that will match the pattern abccba for the string_view coding below. Do not use the specific lettered pattern given. Use only special characters such as parentheses, periods, quotes and backslahes.
+```{r}
+strings <- c("abcabc", "abbabb", "abbbab", "abccba")
+str_view(strings, pattern = "(.)(.)(.)\\3\\2\\1", match = TRUE)
+```
+
+### Question 3:
+#### For the vector given below, create a string expression that will match all files that end with .xlsx Use R code that features a stringr function to confirm your answer.
+```{r}
+files = c(
+"tmp-project.csv", "project.csv",
+"project2-csv-specs.csv", "project2.csv2.specs.xlsx",
+"project_cars.ods", "project-houses.csv",
+"Project_Trees.csv","project-cars.R",
+"project-houses.r", "project-final.xls",
+"Project-final2.xlsx"
+)
+
+str_match(files, "\\.xlsx$")
+```
+
+### Question 4:
+#### Using the words data set, create a regular expression that will match words that end with 2 e’s ( such as free or see ). Use R code that features a stringr function to confirm your answer.
+```{r include=FALSE}
+stringr ::  words
+```
+
+
+```{r}
+words[str_detect(words, ".*ee$")]
+```
+
+### Question 5:
+#### Create a general regular expression that will match words that start and end with the same character. For example: willow, diamond, or executive.
+```{r}
+matches <- str_detect(words, "^(.).*\\1$")
+matched_words <- words[matches]
+matched_words
+```
+
+### Question 6:
+#### Describe in words what the regular expression will match: “(.)(.)(.).*\\3\\2\\1”
+Words that would match this regular expression would look like a word that begins with any 3 letters and then the ".*" mean that there can be any other characters (wildcard) in the word--until the last 3 characters. The last letters/characters could be a repeat of the first 3 but backwards order. So it would be like "Syd(anything else)dys" I think. 
+
+
+
+
+
+
+
+
+
+

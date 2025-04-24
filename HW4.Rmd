@@ -1,0 +1,131 @@
+---
+title: "hw4_data412_SydneyBall"
+author: "Sydney Ball"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+####Import Libraries
+```{r}
+library(tidyverse)
+```
+
+####Question 2:
+How many mammals are in the msleep data frame? How many variables? Use two R functions to get this information.
+```{r}
+msleep
+NCOL(msleep)
+NROW(msleep)
+```
+There are 83 animals (mammals) and there are 11 variable total. 
+
+####Question 3:
+Plot “Body Weight” against the "Total Amount of Sleep”
+
+```{r}
+plot1 <- ggplot(data=msleep) +
+  geom_point(mapping = aes(x = bodywt, y=sleep_total), color = "purple") +
+  xlab("Body Weight") +
+  ylab("Total Amount of Sleep")
+plot1
+```
+
+The explanatory variable seems to be body weight and the response variable is total amount of sleep. 
+
+####Question 4:
+Take the log of data until the data relationship seems less curved
+```{r}
+plot2 <- ggplot(data=msleep) +
+  geom_point(mapping = aes(x = log(bodywt), y=log(sleep_total)), color = "magenta4") +
+  xlab("Body Weight") +
+  ylab("Total Amount of Sleep")
+plot2
+```
+
+Taking the log of both the explanatory and response variable seems to result in the best negative linear relationship. 
+
+####Question 5:
+Color code the scatter plot in problem 4 by the diet of the animals "vore" and add a title to your scatter plot. Use and show R code to produce the scatter plot.
+```{r}
+plot3 <- ggplot(data=msleep) +
+  geom_point(mapping = aes(x = log(bodywt), y=log(sleep_total), color = vore)) +
+  xlab("Body Weight") +
+  ylab("Total Amount of Sleep") +
+  ggtitle("Amount of Sleep for an Animals Body Weight and Diet")
+  
+plot3
+```
+
+####Question 6:
+```{r}
+plot4 <- ggplot(data=msleep) +
+  geom_point(mapping = aes(x = log(bodywt), y=log(sleep_total), color = vore)) +
+  geom_smooth(method=lm, mapping=aes(x=log(bodywt),y=log(sleep_total)), se=FALSE) +
+  xlab("Body Weight") +
+  ylab("Total Amount of Sleep") +
+  ggtitle("Amount of Sleep for an Animals Body Weight and Diet")
+  
+plot4
+```
+
+####Question 7:
+Now use R code to change the appearance of the regression line. The regression line should be dashed and black.
+```{r}
+plot5 <- ggplot(data=msleep) +
+  geom_point(mapping = aes(x = log(bodywt), y=log(sleep_total), color = vore)) +
+  geom_smooth(method=lm, mapping=aes(x=log(bodywt),y=log(sleep_total)), se=FALSE, color="black", linetype="dashed")  +
+  xlab("Body Weight") +
+  ylab("Total Amount of Sleep") +
+  ggtitle("Amount of Sleep for an Animals Body Weight and Diet")
+  
+plot5
+```
+
+####Question 8:
+Use a dplyr function to modify the msleep data table so that it only shows the vore types that are carinvores (carni).
+```{r}
+msleep%>%
+  filter(vore == "carni")
+```
+
+####Question 9:
+Use a dplyr functions to modify the msleep data table so that it only shows the variables name, vore, bodywt and conservation. Also, your data table should only show domesticated animals that have a bodyweight that is greater than 50 kilograms.
+```{r}
+msleep%>%
+  select(name, vore, bodywt, conservation)%>%
+  filter(conservation == "domesticated")%>%
+  filter(bodywt >= 50)%>%
+  arrange(desc(bodywt))
+```
+
+####Question 10:
+Use the group_by and summarize commands to find the mean sleep_total value for each level of the variable vore.
+```{r}
+msleep%>%
+  select(sleep_total, vore)%>%
+  group_by(vore) %>%
+  summarize(MeanSleep_total = mean(sleep_total))
+```
+
+####Question 11: 
+Use dplyr functions to modify the msleep data table so that it only shows the variables name, vore, bodywt and sleep_total. Also create a new variable in your data table that gives a ratio of sleep totals to body weight.
+
+A partial representation of the table is given below. Note that the values for the new variable ratio is listed in descending order. Use dplyr coding to produce and display the first 15 rows of the data table.
+```{r}
+msleep%>%
+  select(name, vore, bodywt, sleep_total)%>%
+  mutate(sleeptobodywt = round((bodywt/sleep_total)))%>%
+  arrange(desc(sleeptobodywt))%>%
+  print(n=15)
+
+```
+
+
+
+
+
+
+
+
+
+
